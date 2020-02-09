@@ -1,0 +1,68 @@
+---
+title: "Practical 1"
+author: "Kgotso Modise"
+date: "06 February 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+
+#Gamma Distribution
+set.seed(1)
+sim = 550
+lambda = 0.25
+t = 395
+
+nclaims = rpois(n = sim, lambda = t*lambda)
+claim_amount_gamma <- matrix(0, nrow = sim, ncol = 1)
+
+for(i in 1:sim)
+{
+  x = rgamma(nclaims[i], shape = 4.15, scale = 24)
+  claim_amount_gamma[i] <- sum(x)
+}
+
+gamma_mean = mean(claim_amount_gamma)
+gamma_var <- var(claim_amount_gamma)
+theoretical_gamma_mean <- (t*lambda)*(24*4.15)
+theoretical_gamma_var <- (t*lambda)*(4.15*(24^2)) + (t*lambda)*(4.15*24)^2
+
+matrix(c(
+  gamma_mean, theoretical_gamma_mean,
+  gamma_var, theoretical_gamma_var
+), nrow = 2, ncol = 2, byrow = T)
+```
+
+
+
+
+```{r}
+
+#Normal distribution
+set.seed(1)
+claim_amount_norm <- matrix(0, nrow = sim, ncol = 1)
+
+for(i in 1:sim)
+{
+  x = rnorm(nclaims[i], mean = 85, sd = 5)
+  claim_amount_norm[i] <- sum(x)
+}
+
+norm_mean <- mean(claim_amount_norm)
+norm_var <- var(claim_amount_norm)
+theoretical_norm_mean <- (t*lambda)*(85) 
+theoretical_norm_var <- (t*lambda)*(25) + (t*lambda)*(85)^2
+
+matrix(c(
+  norm_mean, theoretical_norm_mean,
+  norm_var, theoretical_norm_var
+), nrow = 2, ncol = 2, byrow = T)
+
+
+```
+
