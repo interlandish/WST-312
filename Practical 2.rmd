@@ -12,8 +12,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 
 A = matrix(c(0.18, 0.6, 0.22, 0.22, 0.18, 0.6, 0.13, 0.22, 0.65), nrow = 3, ncol = 3, byrow = T )
-
-
 state_space = c(1, 2, 3)
 
 a = 3
@@ -27,31 +25,22 @@ initial_states = matrix(c(1, 0.2, 2, 0.26, 3, 0.54), nrow = 3, byrow = T)
 markov_transition_prob <-  function(t1, t2, t3, t4, t0 = 0, jump = F)
 {
   states <- c(t0, t1, t2, t3, t4)
-  
   result = 0
   if(t0 %in% state_space && jump == F)
   {
-    transition_1 <- (A)[t0, t1]
-    transition_2 <- (A)[t1, t2]
-    transition_3 <- (A)[t2, t3]
-    transition_4 <- (A)[t3, t4]
-    result = transition_1*transition_2*transition_3*transition_4
+    result = A[t0, t1]*A[t1, t2]*A[t2, t3]*A[t3, t4]
   }
   else if(t0 %in% state_space && jump == F)
   {
     
-    result = A[t0, t1] * (A*A*A)[t1, t4]
+    result = A[t0, t1] * (A%*%A%*%A)[t1, t4]
   }
   else
   {
     for(i in 1:3)
     {
       t0 = initial_states[i, 1]
-      transition_1 <- (A)[t0, t1]
-      transition_2 <- (A)[t1, t2]
-      transition_3 <- (A)[t2, t3]
-      transition_4 <- (A)[t3, t4]
-      result = result + initial_states[i, 2]*transition_1*transition_2*transition_3*transition_4
+      result = result + initial_states[i, 2]*A[t0, t1]*A[t1, t2]*A[t2, t3]*A[t3, t4]
     }
   }
   
@@ -59,9 +48,5 @@ markov_transition_prob <-  function(t1, t2, t3, t4, t0 = 0, jump = F)
 }
 
 markov_transition_prob(a, b, c, d, i, T)
-
-
-
-
 
 ```
