@@ -1,0 +1,73 @@
+---
+title: "Practical 4"
+author: "Kgotso Modise"
+date: "10 March 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+n <- 1
+nMax <- 10
+
+P <- matrix(c(0, 0.2, 0.5, 0.3,
+              0.45, 0.2, 0.1, 0.25,
+              0, 1, 0, 0,
+              0, 0, 0, 1), byrow = T, ncol = 4, nrow = 4)
+
+fiin = P
+fii = matrix(0, ncol = 4, nrow = 4)
+Pn = P
+fiins <- matrix(0, ncol = 4*(nMax+1), nrow = 4 )
+
+for(i in 1:4)
+{
+  for(j in 1:4)
+  {
+    fiins[i, j] = P[i, j]
+  }
+}
+
+b = 0
+for(n in 2:nMax)
+{
+  Pn = Pn%*%P
+  for(i in 1:nrow(P))
+  {
+    for(j in 1:ncol(P))
+    {
+      summ = 0
+      for(k in 1:(n - 1))
+      {
+        Pk <- diag(4)
+        for(u in 1:(n - k)) Pk = Pk%*%P
+        summ = summ + (Pk[j, j] * fiins[i, j + 4*(k-1)])
+      }
+      fiin[i, j] = Pn[i, j] - summ
+      fii[i, j + 4*(b+1)] = fiin[i, j]
+    }
+  }
+  b = b + 1
+}
+b = 0
+while(b < ncol(fiins)/4)
+{
+  for(i in 1:nrow(fii))
+  {
+    for(j in 1:ncol(fii))
+    {
+      fii[i, j] = fii[i, j] + fiins[i, j + 4*(b)] 
+    }
+  }
+  b = b + 1
+}
+
+fii
+
+
+```
+
