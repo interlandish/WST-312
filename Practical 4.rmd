@@ -112,4 +112,36 @@ newMatrix
 
 
 ```
+```{r}
+R = matrix(0, nrow = length(transientStates), ncol = length(recurrentStates))
+Q = matrix(0, nrow = length(transientStates), ncol = length(transientStates))
+
+for(i in 1:nrow(R))
+{
+  for(j in 1:ncol(R))
+  {
+    R[i, j] = P[transientStates[i], recurrentStates[j]]
+  }
+}
+
+for(i in 1:nrow(Q))
+{
+  for(j in 1:ncol(Q))
+  {
+    Q[i, j] = P[transientStates[i], transientStates[j]]
+  }
+}
+
+g1 = R
+g2 = Q%*%g1
+g3 = Q%*%g2
+g4 = Q%*%g3
+
+```
+
+
+
+
+
+
 
