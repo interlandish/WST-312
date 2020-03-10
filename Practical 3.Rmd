@@ -11,24 +11,32 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 
-matrix_vals <- c(0, 0.2, 0.5, 0.3, 0.45, 0.2, 0.1, 0.25, 0, 1, 0, 0, 0, 0, 0, 1);
+P = matrix(c(0, 0.2, 0.5, 0.3, 
+             0.45, 0.2, 0.1, 0.25,
+             0, 1, 0, 0,
+             0, 0, 0, 1), byrow = T, ncol = 4, nrow = 4)
 
-
-p = matrix(matrix_vals, nrow = 4, ncol = 4, byrow = T)
-
-for(i in 1:nrow(p))
+n = 1
+Pn = P
+while(n < 5)
 {
-  for(j in 1:ncol(p))
+  cat("================", "for n =", n, "==================== \n")
+  for(i in 1:nrow(P))
   {
-    if(p[i, j] != 0 && p[j, i] != 0)
+    for(j in 1:ncol(P))
     {
-      cat("State ", i, " communicates with state ", j, "\n")
-    }
-    else if(p[i, j] != 0)
-    {
-      cat("State ", j, " is accessible from state", i, "\n")
+      if(Pn[i, j] != 0 && Pn[j, i] != 0)
+      {
+        cat("State", j, "communicates with state", i, "\n")
+      }
+      else if(Pn[i, j] != 0)
+      {
+        cat("State", j, "is accessible from state", i, "\n")
+      }
     }
   }
+  n = n + 1
+  Pn = Pn%*%P
 }
 
 ```
@@ -37,77 +45,56 @@ for(i in 1:nrow(p))
 #Finding n
 found_n <- F
 n <- 1
-pn = p
-#Finding minimum n
+Pn = P
 while(!found_n)
 {
-  
   for(i in 1:nrow(p))
   {
-    #Finding n
-    if(pn[i, i] != 0)
-    {
-      found_n <- T
-    }
+    if(pn[i, i] != 0){ found_n <- T }
     else
     {
       found_n <- F
       n <-  n + 1
-      pn = pn%*%p
+      Pn = Pn%*%P
       break
     }
   }
 }
 cat("Minimum n required is ", n)
+```
 
-#Finding the period of each state
-i = 1
-ns <- matrix(0, ncol = 4, nrow = 4)
-periods <- matrix(0, ncol = 3, nrow = 4)
-for(i in 1:ncol(p))
+
+```{r}
+numberOfSteps <- matrix(0, ncol = 5, nrow = 4)
+
+
+for(i in 1:nrow(A))
 {
-  pn = p
-  found_4 <- 0
-  j = 1
+  An = A
   n = 1
+  j = 1
+  found = 0
   
-  if(p[i, i] > 0)
+  while(found < 5)
   {
-      ns[i, j] <- n
-      j = 2
-      n = 2
-      found_4 <- 1
-  }
-  while(found_4 < 4)
-  {
-    if(pn[i, i] > 0)
+    if(An[i, i] > 0)
     {
-      found_4 = found_4 + 1
-      ns[i, j] <- n
+      numberOfSteps[i, j] = n
+      found = found + 1
       j = j + 1
-      
     }
     n = n + 1
-    pn = pn%*%p;
-    for(k in 1:3)
-    {
-      periods[i, k] = ns[i, k + 1] - ns[i, k]
-    }
-    common = periods[i, 1]
-    is_period = T
-    for(k in 1:3)
-    {
-      if(periods[i, k] == common && common != 0) is_period = T
-      else is_period = F
-    }
-    if(is_period) cat("The period for state ", i, " is ", common, "\n")
+    (An <-  An %*% A)
   }
   
 }
-print(ns)
 
-
-#Finding the period of each state
+# calculate GCD
+library(FRACTION)
+for(i in 1:nrow(numberOfSteps))
+{
+  cat("Period of state", i, "is", gcd(numberOfSteps[1], gcd(numberOfSteps[2], gcd(numberOfSteps[3], gcd(numberOfSteps[4], numberOfSteps[5])))), "\n")
+}
 ```
 
 ```{r}
@@ -115,8 +102,6 @@ print(ns)
 vals <- c(0.15,0.85,0,0,0,0,0,0,0,0,0.1,0.4,0.5,0,0,0,0,0,0,0,0,0.25,0.5,0.25,0,0,0,0,0,0,0,0,0.3,0.4,0.3,0,0,0,0,0,0,0,0,0.5,0.2,0.3,0,0,0,0,0,0,0,0,0.45,0.25,0.3,0,0,0,0,0,0,0,0,0.5,0.3,0.2,0,0,0,0,0,0,0,0,0.7,0.2,0.1,0,0,0,0,0,0,0,0,0.75,0.05,0.2,0,0,0,0,0,0,0,0,0.05,0.95)
 
 P <- matrix(vals, nrow = 10, ncol = 10, byrow = T)
-
-
 n  = 2
 has_zero = T
 PN = P
@@ -137,7 +122,6 @@ while(has_zero)
   if(!has_zero)
   {
     cat("Required number N is ", n, "\n")
-    print(PN)
     break;
   }
   n = n + 1
