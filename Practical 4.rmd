@@ -20,7 +20,7 @@ P <- matrix(c(0, 0.2, 0.5, 0.3,
               0, 0, 0, 1), byrow = T, ncol = 4, nrow = 4)
 
 fiin = P
-fii = matrix(0, ncol = 4, nrow = 4)
+fii = P
 Pn = P
 fiins <- matrix(0, ncol = 4*(nMax+1), nrow = 4 )
 
@@ -48,25 +48,67 @@ for(n in 2:nMax)
         summ = summ + (Pk[j, j] * fiins[i, j + 4*(k-1)])
       }
       fiin[i, j] = Pn[i, j] - summ
-      fii[i, j + 4*(b+1)] = fiin[i, j]
-    }
-  }
-  b = b + 1
-}
-b = 0
-while(b < ncol(fiins)/4)
-{
-  for(i in 1:nrow(fii))
-  {
-    for(j in 1:ncol(fii))
-    {
-      fii[i, j] = fii[i, j] + fiins[i, j + 4*(b)] 
+      fiins[i, j + 4*(b+1)] = fiin[i, j]
+      fii[i, j] = fii[i, j] + fiins[i, j + 4*(b+1)]
     }
   }
   b = b + 1
 }
 
-fii
+recurrentStates <- numeric()
+transientStates <- numeric()
+a = 1
+b = 1
+for(i in 1:4)
+{
+  if(fii[i, i] == 1) 
+  {
+    cat("State", i, "is reccurent\n")
+    recurrentStates[a] <- i
+    a = a + 1
+  }
+  else
+  {
+    cat("State", i, "is transient\n")
+    transientStates[b] <- i
+    b = b + 1
+  }
+}
+
+
+```
+
+```{r}
+newMatrix = matrix(0, nrow = 4, ncol = 4)
+
+for(i in 1:length(recurrentStates))
+{
+  for(j in 1:length(recurrentStates))
+  {
+    newMatrix[i, j] = P[recurrentStates[i], recurrentStates[j]]
+  }
+}
+
+for(i in 1:length(transientStates))
+{
+  for(j in (1):length(recurrentStates))
+  {
+    newMatrix[i + length(recurrentStates), j] = P[transientStates[i], recurrentStates[j]]
+  }
+}
+
+for(i in 1:length(transientStates))
+{
+  for(j in 1:length(transientStates))
+  {
+    newMatrix[i + length(recurrentStates), j + length(recurrentStates)] = P[transientStates[i], transientStates[j]]
+  }
+}
+
+rownames(newMatrix) <- c(recurrentStates, transientStates)
+colnames(newMatrix) <- c(recurrentStates, transientStates)
+
+newMatrix
 
 
 ```
